@@ -339,13 +339,10 @@
         if (!/^[A-Za-z0-9_.-]{3,20}$/.test(username)) return msg('Pseudo : 3 à 20 caractères (lettres, chiffres, _ . -).')
         const { data: free } = await sb.rpc('username_available', { p_username: username })
         if (free === false) return msg('Ce pseudo est déjà pris, choisis-en un autre.')
-        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username } } })
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username }, emailRedirectTo: location.origin + location.pathname + '#compte' } })
         if (error) return msg(fr(error.message))
-        // No e-mail confirmation: the account is ready, sign in right away.
-        if (!data.session) {
-          const { error: e2 } = await sb.auth.signInWithPassword({ email, password })
-          if (e2) return msg(fr(e2.message))
-        }
+        // E-mail confirmation: the player confirms with the link, then signs in here.
+        if (!data.session) return msg('Compte créé ! Clique sur le lien reçu par e-mail pour le confirmer, puis connecte-toi ici (pense aux spams).', true)
         msg('Compte créé ! Clique sur « Afficher ma clé » 🎁', true)
       } else {
         const { error } = await sb.auth.signInWithPassword({ email, password })
