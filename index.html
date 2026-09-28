@@ -143,7 +143,7 @@
 <nav>
   <div class="wrap">
     <a class="brand" href="#"><img src="img/logo.png" alt="" /><span>HIMALAYA</span></a>
-    <div class="links"><a href="#fonctions">Fonctions</a><a href="#compte">Essai gratuit</a><a href="#faq">FAQ</a></div>
+    <div class="links"><a href="#fonctions">Fonctions</a><a href="#compte">Essai gratuit</a><a href="classement.html">Classement</a><a href="boutique.html">Boutique</a><a href="#faq">FAQ</a></div>
     <a class="btn btn-ghost btn-sm" href="#compte" id="navAccount">Mon compte</a>
     <a class="btn btn-main btn-sm dl-link" href="https://github.com/Shino2210/Himalaya/releases/latest">Télécharger</a>
   </div>
@@ -257,6 +257,11 @@
           <li>Au premier lancement, <b>colle ta clé</b> puis clique « Activer ».</li>
           <li><b>Connecte-toi avec ce compte</b> (même e-mail, même mot de passe) : tes 14 jours commencent.</li>
         </ol>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
+          <a class="btn btn-ghost btn-sm" id="myProfile" href="joueur.html">👤 Mon profil public</a>
+          <a class="btn btn-ghost btn-sm" href="boutique.html">🛒 Boutique &amp; commandes</a>
+          <a class="btn btn-ghost btn-sm" href="classement.html">🏆 Classement</a>
+        </div>
       </div>
     </div>
   </div>
@@ -358,6 +363,7 @@
     await sb.rpc('ensure_my_profile')
     const { data } = await sb.rpc('my_site_account')
     $('accName').textContent = data?.username || session.user.email
+    if (data?.username) $('myProfile').href = 'joueur.html?u=' + encodeURIComponent(data.username)
     if (data?.has_key) $('keyState').textContent = 'Ta clé est prête : clique sur « Afficher ma clé ».'
   }
   $('showKey').onclick = async () => {

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Boutique Himalaya</title>
+<meta name="description" content="Boutique Himalaya : Himacoins, VIP, passe de combat Premium et Optimisation, payables avec PayPal." />
+<meta name="theme-color" content="#070A0F" />
+<link rel="icon" href="img/favicon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="web.css" />
+<style>
+  .top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+  .wallet { margin-left: auto; display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-radius: 16px; background: radial-gradient(ellipse at top left, rgba(255,194,77,.18), transparent 70%), var(--panel); border: 1px solid rgba(255,194,77,.35); }
+  .wallet b { font: 900 22px Orbitron, sans-serif; color: #FFE08A; }
+  .products { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  .prod { position: relative; display: flex; flex-direction: column; gap: 6px; border-radius: 18px; padding: 20px 18px 18px; background: var(--panel); border: 1px solid var(--line); }
+  .prod .ic { font-size: 34px; line-height: 1; margin-bottom: 4px; }
+  .prod h3 { margin: 0; font-size: 17px; }
+  .prod p { margin: 0 0 8px; color: var(--muted); font-size: 13.5px; flex: 1; }
+  .prod .price { font: 900 20px Orbitron, sans-serif; margin-bottom: 10px; }
+  .prod.best { border-color: rgba(32,217,255,.55); box-shadow: 0 16px 40px -20px rgba(0,168,255,.7); }
+  .prod .ribbon { position: absolute; top: -11px; right: 14px; font-size: 11px; font-weight: 900; letter-spacing: .1em; padding: 3px 9px; border-radius: 7px; background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #021019; }
+  .prod.vip { border-color: rgba(255,194,77,.45); background: radial-gradient(ellipse at top, rgba(255,194,77,.14), transparent 70%), var(--panel); }
+  .cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-top: 30px; }
+  .order { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); margin-bottom: 8px; font-size: 14px; }
+  .order .lbl { flex: 1; min-width: 140px; }
+  .pill { font-size: 11.5px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+  .pill.wait { background: rgba(255,194,77,.15); color: var(--gold); }
+  .pill.ok { background: rgba(46,229,157,.14); color: var(--green); }
+  .pill.off { background: rgba(255,255,255,.07); color: var(--muted); }
+  .key { font: 700 12.5px Consolas, monospace; color: #FFE08A; background: rgba(0,0,0,.35); padding: 3px 8px; border-radius: 7px; cursor: pointer; }
+  .hist { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 14px; }
+  .hist span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .plus { color: var(--green); font-weight: 800; } .minus { color: var(--red); font-weight: 800; }
+  .login { max-width: 460px; margin: 10px auto 0; }
+  .note { font-size: 13.5px; color: #B7C4D2; background: rgba(0,0,0,.25); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+  @media (max-width: 1000px) { .products { grid-template-columns: repeat(2, 1fr); } .cols { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .products { grid-template-columns: 1fr; } .wallet { margin-left: 0; width: 100%; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="wrap">
+    <div class="top">
+      <div><h1 class="h1">🛒 Boutique</h1><p class="sub" style="margin:0">Paiement sécurisé avec PayPal · livré directement dans Himalaya.</p></div>
+      <div class="wallet" id="wallet" hidden><span style="font-size:28px">🪙</span><div><div class="small">Mes Himacoins</div><b id="coins">…</b></div></div>
+    </div>
+
+    <!-- signed out -->
+    <div id="out" hidden>
+      <div class="panel login">
+        <h2 class="h2" style="text-align:center">Connecte-toi</h2>
+        <p class="small center" style="margin:-6px 0 18px">Avec le même compte que dans l'application Himalaya.</p>
+        <form id="loginForm">
+          <label class="field"><span>Adresse e-mail</span><input name="email" type="email" required autocomplete="email" /></label>
+          <label class="field"><span>Mot de passe</span><input name="password" type="password" required autocomplete="current-password" /></label>
+          <button class="btn btn-main btn-block" id="loginBtn">Se connecter</button>
+          <div class="msg" id="loginMsg"></div>
+        </form>
+        <p class="small center" style="margin-top:16px">Pas encore de compte ? <a href="index.html#compte" style="color:var(--cyan);font-weight:700">Crée-le ici</a> (14 jours offerts).</p>
+      </div>
+    </div>
+
+    <!-- signed in -->
+    <div id="in" hidden>
+      <div class="products" id="products"></div>
+      <p class="small">Les Himacoins servent à acheter avatars, cadres, bannières et niveaux du passe directement dans Himalaya.</p>
+      <div class="cols">
+        <div class="panel">
+          <h2 class="h2" style="font-size:18px">📦 Mes commandes</h2>
+          <div id="orders"><div class="spinner" style="margin:20px auto"></div></div>
+        </div>
+        <div class="panel">
+          <h2 class="h2" style="font-size:18px">🪙 Historique des Himacoins</h2>
+          <div id="history"><div class="spinner" style="margin:20px auto"></div></div>
+          <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" id="myProfile" href="#">👤 Mon profil public</a><button class="btn btn-ghost btn-sm" id="logout">Se déconnecter</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="modal" hidden><div id="modalBox"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="data.js"></script>
+<script src="web.js"></script>
+<script>
+  renderNav('shop')
+  const ICON = { coins: '🪙', vip: '👑', feature: '⚡' }
+  const DESC = {
+    coins500: 'Pour un avatar ou un cadre.', coins1100: 'Le bon plan : +10 % offerts.', coins2150: 'Pour une bannière animée et plus.', coins5500: 'Le plus gros pack : +10 % offerts.',
+    vip30: 'Avatars, cadres et bannières VIP, et badge VIP pendant 30 jours.',
+    optimisation: 'Tous les réglages d\'optimisation du PC, débloqués à vie.',
+    passe: 'Toutes les récompenses Premium du passe de combat de la saison.',
+  }
+  const payUrl = (link, cents) => { const b = link.replace(/\/+$/, ''); return /paypal\.me\//i.test(b) ? `${b}/${(cents / 100).toFixed(2)}EUR` : b }
+  let products = []
+
+  // ——— session ———
+  async function show() {
+    const { data } = await sb.auth.getSession()
+    const on = !!data.session
+    $('out').hidden = on; $('in').hidden = !on; $('wallet').hidden = !on
+    if (!on) return
+    await sb.rpc('ensure_my_profile')
+    const p = await me()
+    if (p) $('myProfile').href = profileUrl(p.username)
+    loadProducts(); loadOrders(); loadWallet()
+  }
+  $('loginForm').onsubmit = async (e) => {
+    e.preventDefault()
+    const f = new FormData(e.target)
+    $('loginBtn').disabled = true; $('loginMsg').textContent = ''
+    const { error } = await sb.auth.signInWithPassword({ email: String(f.get('email')).trim(), password: String(f.get('password')) })
+    $('loginBtn').disabled = false
+    if (error) { $('loginMsg').className = 'msg err'; $('loginMsg').textContent = frError(error.message); return }
+    location.reload()
+  }
+  $('logout').onclick = async () => { await sb.auth.signOut(); location.reload() }
+
+  // ——— products (prices set in Himalaya Admin) ———
+  async function loadProducts() {
+    const { data } = await sb.from('shop_products').select('id, label, price_cents, tier, coins').order('sort')
+    products = data ?? []
+    $('products').innerHTML = products.map((p) => `
+      <div class="prod${p.id === 'coins1100' ? ' best' : ''}${p.tier === 'vip' ? ' vip' : ''}">
+        ${p.id === 'coins1100' ? '<span class="ribbon">POPULAIRE</span>' : ''}
+        <div class="ic">${p.id === 'passe' ? '🎖️' : ICON[p.tier] ?? '🎁'}</div>
+        <h3>${esc(p.label)}</h3>
+        <p>${esc(DESC[p.id] ?? '')}</p>
+        <div class="price">${euros(p.price_cents)}</div>
+        <button class="btn btn-paypal btn-block" data-buy="${esc(p.id)}"><span style="font-style:italic;font-weight:900">PayPal</span> · Acheter</button>
+      </div>`).join('')
+    $('products').querySelectorAll('[data-buy]').forEach((b) => (b.onclick = () => checkout(b.dataset.buy)))
+  }
+
+  // ——— PayPal checkout: same flow as in the app ———
+  function modal(html) {
+    $('modalBox').innerHTML = html
+    $('modal').hidden = false
+    $('modalBox').querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => ($('modal').hidden = true)))
+  }
+  $('modal').onclick = (e) => { if (e.target === $('modal')) $('modal').hidden = true }
+  const head = (p) => `<div class="mh"><div style="width:42px;height:42px;border-radius:11px;background:#fff;color:#003087;font:italic 900 20px Inter;display:flex;align-items:center;justify-content:center">P</div><div><b style="font-family:Orbitron;letter-spacing:.06em">PAYER AVEC PAYPAL</b><div class="small">${esc(p.label)} · ${euros(p.price_cents)}</div></div><button class="x" data-close>×</button></div>`
+
+  function checkout(id) {
+    const p = products.find((x) => x.id === id)
+    if (!p) return
+    modal(`${head(p)}<div class="mb">
+      <div class="note">Tu paies par PayPal en <b>« Entre proches »</b>. Dès que l'équipe Himalaya a vérifié ton paiement, <b>une clé est créée pour ton compte</b> et livrée directement dans Himalaya (et ici, dans « Mes commandes »).</div>
+      <button class="btn btn-paypal btn-block" id="create">Commander · ${euros(p.price_cents)}</button>
+      <div class="msg err" id="cMsg"></div></div>`)
+    $('create').onclick = async () => {
+      $('create').disabled = true
+      const { data: o, error } = await sb.rpc('create_shop_order', { p_product: id })
+      if (error) { $('create').disabled = false; $('cMsg').textContent = error.message; return }
+      loadOrders()
+      if (!o.link) return modal(`${head(p)}<div class="mb"><p>Le paiement PayPal n'est pas encore configuré. Ta commande <b class="mono">${esc(o.code)}</b> est enregistrée : réessaie plus tard.</p><button class="btn btn-ghost btn-block" data-close>Fermer</button></div>`)
+      modal(`${head(p)}<div class="mb">
+        <div class="stepn"><b class="n">1</b><div style="flex:1">Ouvre PayPal et envoie <b style="color:#FFE08A">${euros(o.price_cents)}</b>.<a class="btn btn-paypal btn-block" style="margin-top:8px" href="${esc(payUrl(o.link, o.price_cents))}" target="_blank" rel="noopener">Ouvrir PayPal · ${euros(o.price_cents)}</a></div></div>
+        <div class="stepn"><b class="n">2</b><div>Choisis <b>« Entre proches »</b> (et non « Biens et services »).</div></div>
+        <div class="stepn"><b class="n">3</b><div>Dans la <b>note</b> du paiement, écris ton code de commande :<br /><span class="code-chip" id="code" title="Copier">${esc(o.code)} 📋</span></div></div>
+        <div class="stepn"><b class="n">4</b><div>C'est tout ! Dès que le paiement est validé, ta clé apparaît dans <b>Mes commandes</b> et dans Himalaya (Paramètres › Commandes).</div></div>
+        <button class="btn btn-ghost btn-block" data-close>J'ai payé, fermer</button></div>`)
+      $('code').onclick = async () => { await navigator.clipboard.writeText(o.code); $('code').textContent = o.code + ' ✓' }
+    }
+  }
+
+  // ——— orders & Himacoins ———
+  async function loadOrders() {
+    const { data } = await sb.rpc('my_shop_orders')
+    const list = (data ?? []).filter((o) => o.status !== 'cancelled')
+    if (!list.length) return ($('orders').innerHTML = '<div class="empty" style="padding:24px">Aucune commande pour l\'instant.</div>')
+    $('orders').innerHTML = list.map((o) => `
+      <div class="order">
+        <span class="mono" style="color:#FFE08A;font-weight:800">${esc(o.code)}</span>
+        <span class="lbl">${esc(o.label)} · ${euros(o.price_cents)}<br /><span class="small">${new Date(o.created_at).toLocaleDateString('fr-FR')}</span></span>
+        ${o.status === 'pending'
+          ? `<span class="pill wait">En attente du paiement</span><button class="btn btn-ghost btn-sm" data-cancel="${o.id}">Annuler</button>`
+          : o.key_code
+            ? `<span class="key" data-copy="${esc(o.key_code)}" title="Copier la clé">🔑 ${esc(o.key_code)}</span>${o.activated ? '<span class="pill ok">✓ Activée</span>' : '<span class="pill wait">À activer dans Himalaya</span>'}`
+            : `<span class="pill off">${esc(o.status)}</span>`}
+      </div>`).join('')
+    $('orders').querySelectorAll('[data-cancel]').forEach((b) => (b.onclick = async () => {
+      if (!confirm('Annuler cette commande ?')) return
+      await sb.rpc('cancel_shop_order', { p_id: Number(b.dataset.cancel) })
+      loadOrders()
+    }))
+    $('orders').querySelectorAll('[data-copy]').forEach((k) => (k.onclick = async () => { await navigator.clipboard.writeText(k.dataset.copy); k.textContent = '✓ Clé copiée' }))
+  }
+  async function loadWallet() {
+    const { data } = await sb.rpc('my_wallet')
+    $('coins').textContent = nf(data?.coins ?? 0)
+    const h = data?.history ?? []
+    $('history').innerHTML = h.length
+      ? h.map((x) => `<div class="hist"><span title="${esc(x.reason)}">${esc(x.reason)}</span><span class="small">${new Date(x.created_at).toLocaleDateString('fr-FR')}</span><span class="${x.delta > 0 ? 'plus' : 'minus'}">${x.delta > 0 ? '+' : ''}${nf(x.delta)}</span></div>`).join('')
+      : '<div class="empty" style="padding:24px">Aucun mouvement pour l\'instant.</div>'
+  }
+
+  show()
+  // refresh orders while the page stays open (the key appears once the payment is validated)
+  setInterval(() => { if (!$('in').hidden) { loadOrders(); loadWallet() } }, 30000)
+</script>
+</body>
+</html>

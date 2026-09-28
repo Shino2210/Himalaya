@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Himalaya</title>
+<link rel="icon" href="/Himalaya/img/favicon.png" />
+<script>
+  // Short profile links: …/Himalaya/joueur/Pseudo → …/Himalaya/joueur.html?u=Pseudo
+  const p = location.pathname
+  const i = p.indexOf('/joueur/')
+  if (i >= 0) location.replace(p.slice(0, i) + '/joueur.html?u=' + p.slice(i + 8).replace(/\/+$/, ''))
+  else location.replace('/Himalaya/')
+</script>
+</head>
+<body style="background:#070A0F;color:#8A97A8;font:16px Inter,system-ui,sans-serif;text-align:center;padding-top:80px">
+  Redirection… <a href="/Himalaya/" style="color:#20D9FF">Retour à l'accueil</a>
+</body>
+</html>
