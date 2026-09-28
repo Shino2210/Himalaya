@@ -79,7 +79,8 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; j
 @media (max-width: 760px) {
   nav .wrap { gap: 10px; }
   .brand span { display: none; }
-  nav .links a { padding: 8px 6px; white-space: nowrap; font-size: 13px; }
+  nav .links a { padding: 8px 9px; white-space: nowrap; font-size: 17px; }
+  nav .links a span { display: none; }
   #navMe.btn { padding: 0 10px; font-size: 12.5px; }
   .me-chip span { display: none; }
   .me-chip { padding: 4px; }

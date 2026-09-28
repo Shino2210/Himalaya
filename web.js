@@ -62,8 +62,9 @@ function renderNav(active) {
   nav.innerHTML = `<div class="wrap">
     <a class="brand" href="index.html"><img src="img/logo.png" alt="" /><span>HIMALAYA</span></a>
     <div class="links">
-      <a href="classement.html" class="${active === 'rank' ? 'on' : ''}">🏆 Classement</a>
-      <a href="boutique.html" class="${active === 'shop' ? 'on' : ''}">🛒 Boutique</a>
+      <a href="classement.html" class="${active === 'rank' ? 'on' : ''}" title="Classement">🏆<span> Classement</span></a>
+      <a href="boutique.html" class="${active === 'shop' ? 'on' : ''}" title="Boutique">🛒<span> Boutique</span></a>
+      <a href="app/" title="App mobile">📱<span> App</span></a>
     </div>
     <a class="btn btn-ghost btn-sm" id="navMe" href="index.html#compte">Mon compte</a>
   </div>`

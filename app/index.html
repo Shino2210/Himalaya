@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Himalaya Mobile</title>
+<meta name="description" content="Ton compagnon Himalaya : amis, chat, récompense du jour, défis et lancement de tes jeux à distance." />
+<meta name="theme-color" content="#070A0F" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Himalaya" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #070A0F; --panel: #0E141C; --panel2: #0A1119; --line: #1C2735; --text: #EEF3F8; --muted: #8A97A8; --cyan: #20D9FF; --blue: #00A8FF; --gold: #FFC24D; --violet: #B18CFF; --green: #2EE59D; --red: #FF7A91;
+    --top: env(safe-area-inset-top, 0px); --bot: env(safe-area-inset-bottom, 0px); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, system-ui, sans-serif; overscroll-behavior: none; }
+  body::before { content: ''; position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse 90% 40% at 20% -5%, rgba(32,217,255,.18), transparent 70%), radial-gradient(ellipse 80% 35% at 90% 0%, rgba(177,140,255,.15), transparent 70%), linear-gradient(180deg, #0B1624, var(--bg) 50%); }
+  button { font: inherit; color: inherit; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  .display { font-family: Orbitron, Inter, sans-serif; letter-spacing: .05em; }
+
+  /* layout */
+  header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: calc(10px + var(--top)) 16px 10px; background: rgba(7,10,15,.85); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,.05); }
+  header.top h1 { margin: 0; font: 900 17px Orbitron, sans-serif; letter-spacing: .12em; flex: 1; }
+  .coins { display: flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 99px; background: rgba(255,194,77,.12); border: 1px solid rgba(255,194,77,.35); color: #FFE08A; font-weight: 800; font-size: 14px; }
+  main { padding: 16px 16px calc(96px + var(--bot)); max-width: 640px; margin: 0 auto; }
+  nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 6px calc(6px + var(--bot)); background: rgba(9,13,19,.94); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,.07); }
+  nav.tabs button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; border: 0; background: none; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 12px; }
+  nav.tabs button .i { font-size: 21px; line-height: 1.1; filter: grayscale(.8); opacity: .8; }
+  nav.tabs button.on { color: var(--cyan); background: rgba(32,217,255,.08); }
+  nav.tabs button.on .i { filter: none; opacity: 1; }
+  .dot { position: absolute; top: 2px; right: calc(50% - 20px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 99px; background: #FF3D5A; color: #fff; font-size: 10.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+
+  /* blocks */
+  .card { background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015)); border: 1px solid var(--line); border-radius: 20px; padding: 16px; margin-bottom: 14px; }
+  .card h2 { margin: 0 0 12px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .r { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .small { font-size: 12.5px; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 18px; border-radius: 13px; border: 0; cursor: pointer; font-weight: 800; font-size: 15px; transition: transform .1s, filter .15s; white-space: nowrap; }
+  .btn:active:not(:disabled) { transform: scale(.97); }
+  .btn:disabled { opacity: .5; }
+  .btn-main { background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #021019; }
+  .btn-gold { background: linear-gradient(135deg, #FFE08A, #FFB020); color: #2A1A00; }
+  .btn-ghost { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .btn-sm { height: 36px; padding: 0 13px; font-size: 13px; border-radius: 10px; }
+  .block { width: 100%; }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .grow { flex: 1; min-width: 0; }
+  .ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .field { width: 100%; height: 48px; border-radius: 12px; border: 1px solid #25344A; background: var(--panel2); color: var(--text); padding: 0 14px; font: 15px Inter, sans-serif; outline: none; }
+  .field:focus { border-color: var(--cyan); }
+  .msg { font-size: 13.5px; margin-top: 10px; } .msg.err { color: var(--red); } .msg.ok { color: var(--green); }
+  .empty { text-align: center; color: var(--muted); padding: 26px 10px; font-size: 14px; }
+  .spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid rgba(32,217,255,.2); border-top-color: var(--cyan); animation: spin .8s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* avatar */
+  .av { position: relative; flex-shrink: 0; border-radius: 24%; overflow: hidden; background: linear-gradient(135deg, #1b3a5c, #0b1624); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #CFF6FF; }
+  .av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .av.vip { box-shadow: 0 0 0 2px var(--gold); }
+  .st { position: absolute; right: -2px; bottom: -2px; width: 13px; height: 13px; border-radius: 50%; border: 2.5px solid var(--bg); }
+  .st.online { background: var(--green); } .st.away { background: var(--gold); } .st.ingame { background: var(--violet); } .st.offline { background: #4A5566; }
+  .avw { position: relative; flex-shrink: 0; }
+
+  /* home */
+  .hello { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .hello .name { font-size: 20px; font-weight: 800; line-height: 1.2; }
+  .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; margin: 8px 0 4px; }
+  .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cyan), var(--violet)); }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 4px 0 14px; }
+  .day { text-align: center; padding: 8px 0 6px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); font-size: 11px; color: var(--muted); }
+  .day b { display: block; font-size: 13px; color: var(--text); }
+  .day.done { background: rgba(46,229,157,.1); border-color: rgba(46,229,157,.4); }
+  .day.done b { color: var(--green); }
+  .day.next { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(255,194,77,.3); }
+  .day.big b { color: #FFE08A; }
+  .daily { background: radial-gradient(ellipse at top left, rgba(255,194,77,.18), transparent 65%), var(--panel); border-color: rgba(255,194,77,.35); }
+  .lic { display: flex; align-items: center; gap: 12px; }
+  .lic .ic { width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(32,217,255,.1); }
+  .lic.warn { border-color: rgba(255,194,77,.5); } .lic.warn .ic { background: rgba(255,194,77,.15); }
+  .lic.off { border-color: rgba(255,122,145,.5); } .lic.off .ic { background: rgba(255,122,145,.15); }
+  .ch { padding: 10px 0; border-top: 1px solid rgba(255,255,255,.05); }
+  .ch:first-of-type { border-top: 0; padding-top: 0; }
+  .stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats3 div { background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; padding: 10px; text-align: center; }
+  .stats3 b { display: block; font: 900 17px Orbitron, sans-serif; }
+
+  /* lists */
+  .item { display: flex; align-items: center; gap: 12px; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,.05); cursor: pointer; }
+  .item:last-child { border-bottom: 0; }
+  .item .sub { font-size: 12.5px; color: var(--muted); }
+  .item .sub.play { color: var(--violet); font-weight: 600; }
+  .badge { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: #FF3D5A; color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .search { display: flex; gap: 8px; margin-bottom: 12px; }
+  .game { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+  .game:last-child { border-bottom: 0; }
+  .game .cv { width: 92px; aspect-ratio: 460/215; border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, #16324d, #0a1119); flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  .game .cv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .notif { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+  .notif:last-child { border-bottom: 0; }
+  .notif .ic { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(32,217,255,.1); flex-shrink: 0; }
+
+  /* chat */
+  .chat { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: var(--bg); }
+  .chat header { display: flex; align-items: center; gap: 10px; padding: calc(10px + var(--top)) 12px 10px; border-bottom: 1px solid var(--line); background: #0A0F16; }
+  .back { width: 38px; height: 38px; border-radius: 12px; border: 0; background: rgba(255,255,255,.06); font-size: 20px; cursor: pointer; }
+  .msgs { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .bub { max-width: 80%; padding: 8px 12px; border-radius: 16px; background: #152131; word-wrap: break-word; white-space: pre-wrap; font-size: 15px; }
+  .bub.mine { align-self: flex-end; background: linear-gradient(135deg, #0E6FA8, #0A4F80); border-bottom-right-radius: 5px; }
+  .bub:not(.mine) { border-bottom-left-radius: 5px; }
+  .bub .t { display: block; font-size: 10.5px; color: rgba(255,255,255,.5); margin-top: 2px; text-align: right; }
+  .bub.big { background: none; font-size: 38px; padding: 0 4px; }
+  .compose { display: flex; gap: 8px; padding: 10px 12px calc(10px + var(--bot)); border-top: 1px solid var(--line); background: #0A0F16; }
+  .compose .field { height: 46px; border-radius: 23px; }
+  .send { width: 46px; height: 46px; border-radius: 50%; border: 0; background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #021019; font-size: 19px; font-weight: 900; cursor: pointer; flex-shrink: 0; }
+
+  /* toast + sheet */
+  .toast { position: fixed; left: 16px; right: 16px; top: calc(12px + var(--top)); z-index: 40; max-width: 480px; margin: 0 auto; padding: 12px 16px; border-radius: 16px; background: #13202E; border: 1px solid rgba(32,217,255,.35); box-shadow: 0 18px 50px -12px rgba(0,0,0,.8); font-weight: 600; animation: drop .25s ease-out; }
+  .toast.err { border-color: rgba(255,122,145,.5); }
+  @keyframes drop { from { transform: translateY(-20px); opacity: 0; } }
+  .sheet { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,.6); display: flex; align-items: flex-end; }
+  .sheet > div { width: 100%; max-width: 640px; margin: 0 auto; background: #0C121A; border: 1px solid var(--line); border-radius: 22px 22px 0 0; padding: 20px 18px calc(20px + var(--bot)); animation: up .22s ease-out; }
+  @keyframes up { from { transform: translateY(40px); opacity: 0; } }
+
+  /* login */
+  .login { max-width: 420px; margin: 0 auto; padding: calc(40px + var(--top)) 20px 40px; }
+  .login .logo { width: 88px; height: 88px; border-radius: 24px; margin: 0 auto 16px; box-shadow: 0 0 36px rgba(32,217,255,.45); }
+  .login h1 { text-align: center; font: 900 24px Orbitron, sans-serif; letter-spacing: .14em; margin: 0 0 4px; }
+  .login label { display: block; margin-bottom: 12px; }
+  .login label span { display: block; font-size: 13px; font-weight: 700; color: #C9D5E2; margin-bottom: 6px; }
+  .install { margin-top: 18px; padding: 14px; border-radius: 16px; background: rgba(32,217,255,.07); border: 1px solid rgba(32,217,255,.25); font-size: 13.5px; color: #C9D5E2; }
+</style>
+</head>
+<body>
+
+<!-- signed out -->
+<div id="loginView" hidden>
+  <div class="login">
+    <img class="logo" src="../img/logo.png" alt="" />
+    <h1>HIMALAYA</h1>
+    <p class="small" style="text-align:center;margin:0 0 26px">Ton compagnon mobile : amis, chat, récompenses et lancement de tes jeux à distance.</p>
+    <form id="loginForm">
+      <label><span>Adresse e-mail</span><input class="field" name="email" type="email" required autocomplete="email" /></label>
+      <label><span>Mot de passe</span><input class="field" name="password" type="password" required autocomplete="current-password" /></label>
+      <button class="btn btn-main block" id="loginBtn">Se connecter</button>
+      <div class="msg err" id="loginMsg"></div>
+    </form>
+    <p class="small" style="text-align:center;margin-top:16px">Même compte que dans Himalaya sur PC. Pas de compte ? <a href="../index.html#compte" style="color:var(--cyan);font-weight:700">Crée-le ici</a></p>
+    <div class="install" id="installTip"></div>
+  </div>
+</div>
+
+<!-- signed in -->
+<div id="appView" hidden>
+  <header class="top">
+    <img src="../img/logo.png" alt="" style="width:30px;height:30px;border-radius:9px" />
+    <h1 id="title">ACCUEIL</h1>
+    <span class="coins" id="coins">🪙 …</span>
+  </header>
+  <main>
+    <section id="tab-home"></section>
+    <section id="tab-friends" hidden></section>
+    <section id="tab-games" hidden></section>
+    <section id="tab-notifs" hidden></section>
+    <section id="tab-me" hidden></section>
+  </main>
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="on"><span class="i">🏠</span>Accueil</button>
+    <button data-tab="friends"><span class="i">👥</span>Amis<span class="dot" id="dotFriends" hidden></span></button>
+    <button data-tab="games"><span class="i">🎮</span>Jeux</button>
+    <button data-tab="notifs"><span class="i">🔔</span>Notifs<span class="dot" id="dotNotifs" hidden></span></button>
+    <button data-tab="me"><span class="i">👤</span>Moi</button>
+  </nav>
+</div>
+
+<div class="chat" id="chat" hidden>
+  <header><button class="back" id="chatBack">‹</button><span id="chatWho" class="row grow"></span></header>
+  <div class="msgs" id="msgs"></div>
+  <form class="compose" id="compose"><input class="field" id="chatInput" placeholder="Écris un message…" maxlength="1000" autocomplete="off" enterkeyhint="send" /><button class="send" aria-label="Envoyer">➤</button></form>
+</div>
+
+<div class="sheet" id="sheet" hidden><div id="sheetBox"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../data.js"></script>
+<script>
+  // ——— Himalaya Mobile: companion app (same accounts and data as Himalaya on PC) ———
+  const sb = window.supabase.createClient('https://winljnabgngqgxhpfzew.supabase.co', 'sb_publishable__7UaPiPtQ253KzBDv-Z7ww_NJr5hPyJ', { auth: { persistSession: true, storageKey: 'himalaya-site-auth' } })
+  const HIMA = window.HIMA ?? { levelTiers: [] }
+  const $ = (id) => document.getElementById(id)
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+  const safeColor = (c) => (/^#[0-9a-f]{3,8}$/i.test(c ?? '') ? c : null)
+  const nf = (n) => Number(n ?? 0).toLocaleString('fr-FR')
+  const hours = (m) => (m >= 60 ? `${nf(Math.floor(m / 60))} h` : `${m ?? 0} min`)
+  const timeOf = (iso) => { const d = new Date(iso); const t = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); return new Date().toDateString() === d.toDateString() ? t : `${d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} ${t}` }
+  const ago = (iso) => { const s = (Date.now() - new Date(iso)) / 1000; return s < 60 ? 'à l\'instant' : s < 3600 ? `il y a ${Math.floor(s / 60)} min` : s < 86400 ? `il y a ${Math.floor(s / 3600)} h` : `il y a ${Math.floor(s / 86400)} j` }
+  const isBigEmoji = (t) => /^(\p{Extended_Pictographic}|\p{Emoji_Component}|️|‍|\s){1,12}$/u.test(t) && /\p{Extended_Pictographic}/u.test(t) && t.length <= 12
+
+  let me = null, acc = null, friends = [], links = [], unread = {}, chatWith = null, tab = 'home'
+
+  // ——— small UI helpers ———
+  let toastTimer
+  function toast(text, err = false) {
+    const t = $('toast'); t.textContent = text; t.className = 'toast' + (err ? ' err' : ''); t.hidden = false
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 3200)
+  }
+  function sheet(html) { $('sheetBox').innerHTML = html; $('sheet').hidden = false; $('sheetBox').querySelectorAll('[data-close]').forEach((b) => (b.onclick = closeSheet)) }
+  const closeSheet = () => ($('sheet').hidden = true)
+  $('sheet').onclick = (e) => { if (e.target === $('sheet')) closeSheet() }
+  function avatar(url, name, size = 44, vip = false, status = null) {
+    const id = typeof url === 'string' && url.startsWith('avatar:') ? url.slice(7).replace(/[^a-z0-9-]/gi, '') : null
+    return `<span class="avw"><span class="av${vip ? ' vip' : ''}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * 0.42)}px">${esc((name ?? '?')[0]?.toUpperCase())}${id ? `<img src="../img/avatars/${id}.jpg" alt="" loading="lazy" onerror="this.remove()" />` : ''}</span>${status ? `<span class="st ${status}"></span>` : ''}</span>`
+  }
+  const nameOf = (p) => { const c = safeColor(p.name_color); return `<b${c ? ` style="color:${c}"` : ''}>${esc(p.username)}</b>` }
+  function levelIcon(level, size = 60) {
+    const t = [...HIMA.levelTiers].reverse().find((x) => level >= x.from) ?? HIMA.levelTiers[0]
+    if (!t) return ''
+    const filter = t.gray ? 'grayscale(1) brightness(1.4)' : t.hue !== undefined ? `hue-rotate(${t.hue}deg) saturate(1.3)` : 'none'
+    return `<span style="position:relative;display:inline-block;width:${size}px;height:${size}px;flex-shrink:0"><img src="../img/levels/tier-${Math.min(t.from, 50)}.png" alt="" style="width:100%;height:100%;object-fit:contain;filter:${filter}" /><span style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);border-radius:99px;border:1px solid ${t.colors[1]};background:${t.colors[0]};padding:0 5px;font:900 ${Math.max(10, size * 0.2)}px Orbitron,sans-serif;color:#fff;line-height:1.35">${level}</span></span>`
+  }
+  const levelTitle = (l) => ([...HIMA.levelTiers].reverse().find((x) => l >= x.from) ?? {}).title ?? ''
+  const liveStatus = (p) => {
+    if (!p.last_seen || p.status === 'offline' || p.status === 'invisible') return 'offline'
+    if (Date.now() - new Date(p.last_seen).getTime() > 3 * 60 * 1000) return 'offline'
+    return p.current_game ? 'ingame' : p.status === 'away' ? 'away' : 'online'
+  }
+
+  // ——— tabs ———
+  const TITLES = { home: 'ACCUEIL', friends: 'AMIS', games: 'MES JEUX', notifs: 'NOTIFICATIONS', me: 'MON COMPTE' }
+  function go(t) {
+    if (!TITLES[t]) t = 'home'
+    tab = t
+    document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t))
+    Object.keys(TITLES).forEach((k) => ($('tab-' + k).hidden = k !== t))
+    $('title').textContent = TITLES[t]
+    window.scrollTo(0, 0)
+    if (t === 'home') renderHome()
+    if (t === 'friends') renderFriends()
+    if (t === 'games') renderGames()
+    if (t === 'notifs') renderNotifs()
+    if (t === 'me') renderMe()
+  }
+  document.querySelectorAll('#tabs button').forEach((b) => (b.onclick = () => go(b.dataset.tab)))
+
+  // ——— session ———
+  async function start() {
+    const { data } = await sb.auth.getSession()
+    if (!data.session) { $('loginView').hidden = false; $('appView').hidden = true; installTip(); return }
+    $('loginView').hidden = true; $('appView').hidden = false
+    me = { id: data.session.user.id }
+    await sb.rpc('ensure_my_profile')
+    await loadAccount()
+    await loadFriends()
+    listen()
+    go(new URLSearchParams(location.search).get('tab') ?? 'home')
+    checkInbox()
+  }
+  $('loginForm').onsubmit = async (e) => {
+    e.preventDefault()
+    const f = new FormData(e.target)
+    $('loginBtn').disabled = true; $('loginMsg').textContent = ''
+    const { error } = await sb.auth.signInWithPassword({ email: String(f.get('email')).trim(), password: String(f.get('password')) })
+    $('loginBtn').disabled = false
+    if (error) return ($('loginMsg').textContent = /Invalid login/i.test(error.message) ? 'E-mail ou mot de passe incorrect.' : /not confirmed/i.test(error.message) ? 'Confirme d\'abord ton e-mail (lien reçu), puis reconnecte-toi.' : error.message)
+    start()
+  }
+  function installTip() {
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent)
+    $('installTip').hidden = standalone
+    $('installTip').innerHTML = ios
+      ? '📲 <b>Installe l\'app sur ton iPhone</b> : dans Safari, touche <b>Partager</b> ⬆️ puis <b>« Sur l\'écran d\'accueil »</b>.'
+      : '📲 <b>Installe l\'app</b> : ouvre le menu ⋮ de Chrome puis <b>« Ajouter à l\'écran d\'accueil »</b> (ou « Installer l\'application »).'
+  }
+
+  async function loadAccount() {
+    const { data } = await sb.rpc('mobile_account')
+    acc = data
+    if (acc) { me = { ...me, ...acc }; $('coins').textContent = '🪙 ' + nf(acc.coins) }
+  }
+
+  // ——— HOME: daily reward, key, level, weekly challenges ———
+  async function renderHome() {
+    const el = $('tab-home')
+    if (!acc) return (el.innerHTML = '<div class="spinner"></div>')
+    const L = acc.level ?? { level: 1, xp: 0, level_xp: 0, next_xp: 1 }
+    const pct = Math.max(3, Math.min(100, ((L.xp - L.level_xp) / Math.max(1, L.next_xp - L.level_xp)) * 100))
+    const lic = acc.license ?? {}
+    const licState = !lic.active ? 'off' : !lic.lifetime && lic.days_left <= 3 ? 'warn' : ''
+    const licText = !lic.active ? '<b>Aucune clé active</b><div class="small">Himalaya ne peut pas s\'ouvrir sur ton PC.</div>'
+      : lic.lifetime ? '<b>Clé à vie ♾️</b><div class="small">Ta licence n\'expire jamais.</div>'
+      : `<b>${lic.days_left <= 0 ? 'Expire aujourd\'hui' : `Encore ${lic.days_left} jour${lic.days_left > 1 ? 's' : ''}`}</b><div class="small">${lic.trial ? 'Essai gratuit · ' : ''}jusqu'au ${new Date(lic.expires_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</div>`
+    el.innerHTML = `
+      <div class="hello">${avatar(acc.avatar_url, acc.username, 58, acc.vip)}<div class="grow"><div class="small">Salut 👋</div><div class="name ell">${nameOf(acc)}${acc.vip ? ' <span style="font-size:12px">👑</span>' : ''}</div></div></div>
+      <div class="card daily" id="daily"><div class="spinner" style="margin:10px auto"></div></div>
+      <div class="card lic ${licState}">
+        <div class="ic">${!lic.active ? '⛔' : licState === 'warn' ? '⏳' : '🔑'}</div>
+        <div class="grow">${licText}</div>
+        ${lic.active && lic.lifetime ? '' : '<a class="btn btn-sm btn-ghost" href="../boutique.html">Prolonger</a>'}
+      </div>
+      <div class="card">
+        <div class="row">${levelIcon(L.level, 64)}<div class="grow"><div class="small">Niveau de compte</div><b style="font:900 19px Orbitron,sans-serif">Niveau ${L.level}</b><div style="color:var(--cyan);font-size:13px;font-weight:700">${esc(levelTitle(L.level))}</div></div></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="small">${nf(L.xp - L.level_xp)} / ${nf(L.next_xp - L.level_xp)} XP · niveau du passe ${acc.pass_level}</div>
+      </div>
+      <div class="card" id="challenges"><h2>🎯 Défis de la semaine</h2><div class="spinner" style="margin:10px auto"></div></div>`
+    renderDaily(); renderChallenges()
+  }
+
+  async function renderDaily() {
+    const { data: d } = await sb.rpc('daily_reward_status')
+    const box = $('daily')
+    if (!box || !d) return
+    const doneUpTo = d.claimed_today ? ((d.streak - 1) % 7) + 1 : d.streak % 7
+    const nextIdx = d.claimed_today ? -1 : ((d.next_streak - 1) % 7) + 1
+    box.innerHTML = `<h2>🎁 Récompense du jour <span class="r">🔥 série de ${d.streak} jour${d.streak > 1 ? 's' : ''}</span></h2>
+      <div class="days">${d.week.map((w) => `<div class="day${w.day <= doneUpTo && (d.claimed_today || w.day < nextIdx) ? ' done' : ''}${w.day === nextIdx ? ' next' : ''}${w.day === 7 ? ' big' : ''}">J${w.day}<b>${w.day === 7 ? '💰' : '🪙'}${w.coins}</b></div>`).join('')}</div>
+      ${d.claimed_today
+        ? '<button class="btn btn-ghost block" disabled>✓ Récupérée · reviens demain</button><div class="small" style="text-align:center;margin-top:6px">Reviens chaque jour pour garder ta série !</div>'
+        : `<button class="btn btn-gold block" id="claim">Récupérer ${d.next_coins} Himacoins + XP du passe</button>${d.vip ? '<div class="small" style="text-align:center;margin-top:6px">👑 Récompenses doublées grâce au VIP</div>' : ''}`}`
+    $('claim')?.addEventListener('click', async (e) => {
+      e.target.disabled = true
+      const { data: r, error } = await sb.rpc('claim_daily_reward')
+      if (error) { e.target.disabled = false; return toast(error.message, true) }
+      toast(`🎉 +${r.coins} Himacoins${r.xp ? ` et +${r.xp} XP` : ''} · série de ${r.streak} jour${r.streak > 1 ? 's' : ''} !`)
+      acc.coins = r.balance; $('coins').textContent = '🪙 ' + nf(r.balance)
+      renderDaily()
+    })
+  }
+
+  async function renderChallenges() {
+    const { data } = await sb.rpc('my_weekly_challenges')
+    const box = $('challenges')
+    if (!box) return
+    const items = data?.items ?? []
+    const ends = data?.ends ? Math.max(0, Math.ceil((new Date(data.ends) - Date.now()) / 86400000)) : null
+    box.innerHTML = `<h2>🎯 Défis de la semaine${ends != null ? `<span class="r">encore ${ends} j</span>` : ''}</h2>` + (items.length ? items.map((c) => {
+      const pct = Math.min(100, (c.progress / c.goal) * 100)
+      const done = c.progress >= c.goal
+      return `<div class="ch"><div class="row"><div class="grow"><b style="font-size:14px">${esc(c.label)}</b><div class="small">${nf(c.progress)} / ${nf(c.goal)} · 🪙 ${c.coins} · ${nf(c.xp)} XP</div></div>
+        ${c.claimed ? '<span class="small" style="color:var(--green);font-weight:800">✓ Reçu</span>' : done ? `<button class="btn btn-sm btn-main" data-ch="${esc(c.id)}">Récupérer</button>` : ''}</div>
+        <div class="bar" style="height:6px"><i style="width:${Math.max(2, pct)}%"></i></div></div>`
+    }).join('') : '<div class="empty">Pas de défi cette semaine.</div>')
+    box.querySelectorAll('[data-ch]').forEach((b) => (b.onclick = async () => {
+      b.disabled = true
+      const { data: r, error } = await sb.rpc('claim_weekly_challenge', { p_id: b.dataset.ch })
+      if (error) { b.disabled = false; return toast(error.message, true) }
+      toast(`🎯 +${r.coins} Himacoins et +${nf(r.xp)} XP !`)
+      $('coins').textContent = '🪙 ' + nf(r.balance)
+      renderChallenges()
+    }))
+  }
+
+  // ——— FRIENDS & CHAT ———
+  async function loadFriends() {
+    const { data } = await sb.from('friendships').select('*').or(`requester.eq.${me.id},addressee.eq.${me.id}`)
+    links = data ?? []
+    const ids = [...new Set(links.map((f) => (f.requester === me.id ? f.addressee : f.requester)))]
+    const { data: profs } = ids.length ? await sb.from('public_profiles').select('id, username, tag, avatar_url, name_color, status, current_game, last_seen, is_vip').in('id', ids) : { data: [] }
+    const byId = Object.fromEntries((profs ?? []).map((p) => [p.id, p]))
+    friends = links.map((f) => ({ link: f, p: byId[f.requester === me.id ? f.addressee : f.requester] })).filter((x) => x.p)
+    const { data: un } = await sb.from('direct_messages').select('sender').eq('recipient', me.id).is('read_at', null)
+    unread = {}
+    for (const r of un ?? []) unread[r.sender] = (unread[r.sender] ?? 0) + 1
+    updateDots()
+  }
+  function updateDots() {
+    const n = Object.values(unread).reduce((a, b) => a + b, 0) + friends.filter((f) => f.link.status === 'pending' && f.link.addressee === me.id).length
+    $('dotFriends').hidden = !n; $('dotFriends').textContent = n > 9 ? '9+' : n
+  }
+  function renderFriends() {
+    const el = $('tab-friends')
+    const incoming = friends.filter((f) => f.link.status === 'pending' && f.link.addressee === me.id)
+    const sent = friends.filter((f) => f.link.status === 'pending' && f.link.requester === me.id)
+    const order = { ingame: 0, online: 1, away: 2, offline: 3 }
+    const accepted = friends.filter((f) => f.link.status === 'accepted').sort((a, b) => (unread[b.p.id] ?? 0) - (unread[a.p.id] ?? 0) || order[liveStatus(a.p)] - order[liveStatus(b.p)] || a.p.username.localeCompare(b.p.username))
+    const onlineCount = accepted.filter((f) => liveStatus(f.p) !== 'offline').length
+    el.innerHTML = `
+      <div class="search"><input class="field" id="addName" placeholder="Ajouter : Pseudo#1234" autocapitalize="off" /><button class="btn btn-main" id="addBtn">＋</button></div>
+      ${incoming.length ? `<div class="card"><h2>📨 Demandes reçues</h2>${incoming.map((f) => `<div class="item" style="cursor:default">${avatar(f.p.avatar_url, f.p.username, 42, f.p.is_vip)}<div class="grow ell">${nameOf(f.p)}<div class="sub">veut t'ajouter en ami</div></div><button class="btn btn-sm btn-main" data-accept="${f.link.id}">✓</button><button class="btn btn-sm btn-ghost" data-refuse="${f.link.id}">✕</button></div>`).join('')}</div>` : ''}
+      <div class="card"><h2>👥 Mes amis <span class="r">${onlineCount} en ligne</span></h2>
+        ${accepted.length ? accepted.map((f) => { const s = liveStatus(f.p); return `<div class="item" data-chat="${f.p.id}">${avatar(f.p.avatar_url, f.p.username, 46, f.p.is_vip, s)}<div class="grow"><div class="ell">${nameOf(f.p)}</div><div class="sub ell${s === 'ingame' ? ' play' : ''}">${s === 'ingame' ? '🎮 ' + esc(f.p.current_game) : s === 'online' ? 'En ligne' : s === 'away' ? 'Absent' : f.p.last_seen ? 'Vu ' + ago(f.p.last_seen) : 'Hors ligne'}</div></div>${unread[f.p.id] ? `<span class="badge">${unread[f.p.id]}</span>` : '<span style="color:var(--muted);font-size:20px">›</span>'}</div>` }).join('') : '<div class="empty">Pas encore d\'amis. Ajoute-les avec leur Pseudo#1234 !</div>'}
+      </div>
+      ${sent.length ? `<div class="card"><h2>⏳ Demandes envoyées</h2>${sent.map((f) => `<div class="item" style="cursor:default">${avatar(f.p.avatar_url, f.p.username, 38)}<div class="grow ell">${nameOf(f.p)}</div><button class="btn btn-sm btn-ghost" data-refuse="${f.link.id}">Annuler</button></div>`).join('')}</div>` : ''}`
+    el.querySelectorAll('[data-chat]').forEach((x) => (x.onclick = () => openChat(x.dataset.chat)))
+    el.querySelectorAll('[data-accept]').forEach((b) => (b.onclick = async () => { await sb.from('friendships').update({ status: 'accepted' }).eq('id', b.dataset.accept); await loadFriends(); renderFriends(); toast('🤝 Vous êtes maintenant amis !') }))
+    el.querySelectorAll('[data-refuse]').forEach((b) => (b.onclick = async () => { await sb.from('friendships').delete().eq('id', b.dataset.refuse); await loadFriends(); renderFriends() }))
+    $('addBtn').onclick = addFriend
+    $('addName').onkeydown = (e) => { if (e.key === 'Enter') addFriend() }
+  }
+  async function addFriend() {
+    const v = $('addName').value.trim()
+    const m = /^(.+)#(\d{1,4})$/.exec(v)
+    if (!m) return toast('Écris le pseudo et le numéro, par exemple Shino#1234.', true)
+    const { data: p } = await sb.from('public_profiles').select('id, username').ilike('username', m[1].replace(/[%_]/g, '')).eq('tag', Number(m[2])).maybeSingle()
+    if (!p) return toast('Joueur introuvable.', true)
+    if (p.id === me.id) return toast('C\'est toi ! 😄', true)
+    if (friends.some((f) => f.p.id === p.id)) return toast('Vous êtes déjà amis (ou une demande existe).', true)
+    const { error } = await sb.from('friendships').insert({ requester: me.id, addressee: p.id })
+    if (error) return toast('Demande impossible : ' + error.message, true)
+    toast(`📨 Demande envoyée à ${p.username}`)
+    $('addName').value = ''
+    await loadFriends(); renderFriends()
+  }
+
+  async function openChat(id) {
+    const f = friends.find((x) => x.p.id === id)
+    if (!f) return
+    chatWith = id
+    $('chatWho').innerHTML = `${avatar(f.p.avatar_url, f.p.username, 38, f.p.is_vip, liveStatus(f.p))}<div class="grow"><div class="ell">${nameOf(f.p)}</div><div class="small ell">${liveStatus(f.p) === 'ingame' ? '🎮 ' + esc(f.p.current_game) : liveStatus(f.p) === 'offline' ? 'Hors ligne' : 'En ligne'}</div></div>`
+    $('chat').hidden = false
+    $('msgs').innerHTML = '<div class="spinner"></div>'
+    history.pushState({ chat: id }, '')
+    const { data } = await sb.from('direct_messages').select('*').or(`and(sender.eq.${me.id},recipient.eq.${id}),and(sender.eq.${id},recipient.eq.${me.id})`).order('created_at', { ascending: false }).limit(150)
+    if (chatWith !== id) return
+    $('msgs').innerHTML = ''
+    ;(data ?? []).reverse().forEach(addBubble)
+    if (!data?.length) $('msgs').innerHTML = `<div class="empty">Dis bonjour à ${esc(f.p.username)} 👋</div>`
+    markRead(id)
+  }
+  function addBubble(m) {
+    const box = $('msgs')
+    box.querySelector('.empty')?.remove()
+    const d = document.createElement('div')
+    d.className = 'bub' + (m.sender === me.id ? ' mine' : '') + (isBigEmoji(m.content) ? ' big' : '')
+    d.innerHTML = `${esc(m.content)}<span class="t">${timeOf(m.created_at)}</span>`
+    box.append(d)
+    box.scrollTop = box.scrollHeight
+  }
+  async function markRead(id) {
+    if (!unread[id]) return
+    unread[id] = 0; updateDots()
+    await sb.from('direct_messages').update({ read_at: new Date().toISOString() }).eq('recipient', me.id).eq('sender', id).is('read_at', null)
+  }
+  function closeChat() { chatWith = null; $('chat').hidden = true; if (tab === 'friends') renderFriends() }
+  $('chatBack').onclick = () => history.back()
+  window.addEventListener('popstate', () => { if (!$('chat').hidden) closeChat() })
+  $('compose').onsubmit = async (e) => {
+    e.preventDefault()
+    const content = $('chatInput').value.trim()
+    if (!content || !chatWith) return
+    $('chatInput').value = ''
+    const { data, error } = await sb.from('direct_messages').insert({ sender: me.id, recipient: chatWith, content }).select('*').single()
+    if (error) { $('chatInput').value = content; return toast(/Doucement/.test(error.message) ? 'Doucement ! Attends une seconde.' : /row-level/.test(error.message) ? 'Vous devez être amis pour discuter.' : error.message, true) }
+    addBubble(data)
+  }
+
+  // ——— GAMES: launch on the PC from the phone ———
+  let gameFilter = ''
+  function renderGames() {
+    const el = $('tab-games')
+    const games = acc?.games ?? []
+    const list = games.filter((g) => g.n.toLowerCase().includes(gameFilter.toLowerCase()))
+    el.innerHTML = `
+      <div class="card" style="background:radial-gradient(ellipse at top left,rgba(177,140,255,.16),transparent 65%),var(--panel)"><div class="row"><span style="font-size:30px">🖥️</span><div class="grow"><b>Lance tes jeux à distance</b><div class="small">Himalaya doit être ouvert sur ton PC. Le jeu démarre, il est prêt quand tu arrives.</div></div></div></div>
+      <div class="search"><input class="field" id="gSearch" placeholder="Chercher un jeu…" value="${esc(gameFilter)}" /></div>
+      <div class="card" style="padding:8px 14px">${list.length ? list.map((g, i) => {
+        const img = /^\d+$/.test(g.s ?? '') ? `<img src="https://cdn.akamai.steamstatic.com/steam/apps/${g.s}/header.jpg" alt="" loading="lazy" onerror="this.remove()" />` : ''
+        return `<div class="game"><div class="cv">🎮${img}</div><div class="grow"><div class="ell" style="font-weight:700">${esc(g.n)}</div><div class="small">${g.m ? hours(g.m) + ' joué' + (g.m >= 60 ? 'es' : '') : 'Jamais lancé'}</div></div><button class="btn btn-sm btn-main" data-launch="${games.indexOf(g)}">▶</button></div>`
+      }).join('') : `<div class="empty">${games.length ? 'Aucun jeu trouvé.' : 'Tes jeux installés apparaîtront ici après avoir ouvert Himalaya sur ton PC.'}</div>`}</div>`
+    $('gSearch').oninput = (e) => { gameFilter = e.target.value; const pos = e.target.selectionStart; renderGames(); $('gSearch').focus(); $('gSearch').setSelectionRange(pos, pos) }
+    el.querySelectorAll('[data-launch]').forEach((b) => (b.onclick = () => launch(games[Number(b.dataset.launch)])))
+  }
+  async function launch(g) {
+    sheet(`<div style="text-align:center"><div style="font-size:40px">🚀</div><h3 style="margin:6px 0 4px">${esc(g.n)}</h3><div class="small" id="lState">Envoi à ton PC…</div><div class="spinner" id="lSpin" style="margin:18px auto"></div><button class="btn btn-ghost block" data-close>Fermer</button></div>`)
+    const { data, error } = await sb.rpc('request_remote_launch', { p_game: g.n, p_steam: g.s ?? '' })
+    if (error) { $('lSpin').hidden = true; $('lState').textContent = error.message; return }
+    const set = (text, done) => { if (!$('lState')) return; $('lState').innerHTML = text; if (done) $('lSpin').hidden = true }
+    const ch = sb.channel('launch-' + data.id).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'remote_launches', filter: `id=eq.${data.id}` }, (p) => {
+      const s = p.new.status
+      if (s === 'launching') set('Ton PC lance le jeu…')
+      if (s === 'launched') { set('✅ <b>C\'est parti !</b> Le jeu démarre sur ton PC.', true); sb.removeChannel(ch) }
+      if (s === 'failed') { set('❌ ' + esc(p.new.message ?? 'Lancement impossible.'), true); sb.removeChannel(ch) }
+    }).subscribe()
+    setTimeout(async () => {
+      const { data: r } = await sb.from('remote_launches').select('status').eq('id', data.id).maybeSingle()
+      if (r?.status === 'pending') { set('😴 <b>Ton PC ne répond pas.</b><br />Vérifie qu\'il est allumé et que Himalaya est ouvert (même réduit).', true); sb.removeChannel(ch) }
+    }, 20000)
+  }
+
+  // ——— NOTIFICATIONS (Himalaya inbox) ———
+  const ICONS = { gift: '🎁', badge: '🏅', support: '💬', vip: '👑', admin: '📢', key: '🔑', pass: '🎖️', trade: '🔁' }
+  let inbox = []
+  const seenKey = () => 'hima-mobile-seen-' + me.id
+  async function checkInbox() {
+    const { data } = await sb.rpc('my_inbox', { p_after: 0 })
+    inbox = data ?? []
+    let seen = 0; try { seen = Number(localStorage.getItem(seenKey()) ?? 0) } catch {}
+    const n = inbox.filter((i) => i.id > seen).length
+    $('dotNotifs').hidden = !n; $('dotNotifs').textContent = n > 9 ? '9+' : n
+  }
+  async function renderNotifs() {
+    const el = $('tab-notifs')
+    el.innerHTML = '<div class="spinner"></div>'
+    await checkInbox()
+    try { if (inbox[0]) localStorage.setItem(seenKey(), inbox[0].id) } catch {}
+    $('dotNotifs').hidden = true
+    el.innerHTML = `${notifPermissionCard()}<div class="card" style="padding:6px 16px">${inbox.length ? inbox.map((i) => `<div class="notif"><div class="ic">${ICONS[i.kind] ?? '🔔'}</div><div class="grow"><b style="font-size:14px">${esc(i.title)}</b>${i.body ? `<div class="small" style="color:#C3CFDC">${esc(i.body)}</div>` : ''}<div class="small">${i.from_username ? 'de ' + esc(i.from_username) + ' · ' : ''}${ago(i.created_at)}</div></div></div>`).join('') : '<div class="empty">Aucune notification.</div>'}</div>`
+    $('notifOn')?.addEventListener('click', async () => { await Notification.requestPermission(); renderNotifs() })
+  }
+  function notifPermissionCard() {
+    if (!('Notification' in window) || Notification.permission !== 'default') return ''
+    return '<div class="card row"><span style="font-size:26px">🔔</span><div class="grow small">Active les notifications pour être prévenu des messages de tes amis.</div><button class="btn btn-sm btn-main" id="notifOn">Activer</button></div>'
+  }
+
+  // ——— ME ———
+  function renderMe() {
+    const el = $('tab-me')
+    const url = new URL('../joueur.html?u=' + encodeURIComponent(acc?.username ?? ''), location.href).href
+    el.innerHTML = `
+      <div class="card" style="text-align:center">
+        <div style="display:flex;justify-content:center">${avatar(acc?.avatar_url, acc?.username, 84, acc?.vip)}</div>
+        <div style="font-size:20px;margin-top:8px">${acc ? nameOf(acc) : ''}<span class="small">#${String(acc?.tag ?? '').padStart(4, '0')}</span></div>
+        <div class="stats3" style="margin-top:14px"><div><b>${acc?.level?.level ?? 1}</b><span class="small">niveau</span></div><div><b>${acc?.pass_level ?? 1}</b><span class="small">passe</span></div><div><b>${nf(acc?.coins)}</b><span class="small">Himacoins</span></div></div>
+      </div>
+      <div class="card" style="padding:6px 16px">
+        <a class="item" href="${esc(url)}"><span style="font-size:22px">👤</span><div class="grow">Mon profil public<div class="sub">À partager avec tes amis</div></div>›</a>
+        <a class="item" href="../boutique.html"><span style="font-size:22px">🛒</span><div class="grow">Boutique & commandes<div class="sub">Himacoins, VIP, clés</div></div>›</a>
+        <a class="item" href="../classement.html"><span style="font-size:22px">🏆</span><div class="grow">Classement<div class="sub">Niveau, temps de jeu, Himacoins</div></div>›</a>
+        <div class="item" id="share"><span style="font-size:22px">📲</span><div class="grow">Inviter un ami<div class="sub">14 jours d'essai gratuit</div></div>›</div>
+      </div>
+      <button class="btn btn-ghost block" id="logout">Se déconnecter</button>
+      <p class="small" style="text-align:center;margin-top:16px">Himalaya Mobile · Créé par Shino &amp; Chamaolla</p>`
+    $('logout').onclick = async () => { await sb.auth.signOut(); location.reload() }
+    $('share').onclick = async () => {
+      const link = new URL('../', location.href).href
+      if (navigator.share) navigator.share({ title: 'Himalaya', text: 'Rejoins-moi sur Himalaya, le launcher de jeux PC ! 14 jours gratuits :', url: link }).catch(() => {})
+      else { await navigator.clipboard.writeText(link); toast('🔗 Lien copié !') }
+    }
+  }
+
+  // ——— real time: messages, friend requests ———
+  function listen() {
+    sb.channel('mobile-dm-' + me.id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'direct_messages', filter: `recipient=eq.${me.id}` }, (p) => {
+        const m = p.new
+        if (chatWith === m.sender && !document.hidden) { addBubble(m); markRead(m.sender); return }
+        unread[m.sender] = (unread[m.sender] ?? 0) + 1
+        updateDots()
+        const f = friends.find((x) => x.p.id === m.sender)
+        const who = f?.p.username ?? 'Un ami'
+        if (chatWith === m.sender) addBubble(m)
+        if (document.hidden) notify(`💬 ${who}`, m.content, { chat: m.sender })
+        else toast(`💬 ${who} : ${m.content.slice(0, 80)}`)
+        if (tab === 'friends' && $('chat').hidden) renderFriends()
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `addressee=eq.${me.id}` }, async (p) => {
+        await loadFriends()
+        if (p.eventType === 'INSERT') { const f = friends.find((x) => x.link.id === p.new.id); const t = `📨 ${f?.p.username ?? 'Quelqu\'un'} veut t'ajouter en ami`; document.hidden ? notify('Himalaya', t, { tab: 'friends' }) : toast(t) }
+        if (tab === 'friends') renderFriends()
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'friendships', filter: `requester=eq.${me.id}` }, async () => { await loadFriends(); if (tab === 'friends') renderFriends() })
+      .subscribe()
+    // friends' status + account, refreshed regularly
+    setInterval(async () => { if (document.hidden) return; await loadFriends(); if (tab === 'friends' && $('chat').hidden) renderFriends() }, 30000)
+    document.addEventListener('visibilitychange', async () => {
+      if (document.hidden) return
+      await Promise.all([loadFriends(), loadAccount(), checkInbox()])
+      if (tab === 'friends' && $('chat').hidden) renderFriends()
+      if (tab === 'home') renderHome()
+    })
+  }
+  async function notify(title, body, data) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+    const reg = await navigator.serviceWorker?.getRegistration()
+    const opts = { body: body.slice(0, 180), icon: 'icon-192.png', badge: 'icon-192.png', data: { ...data, url: location.href } }
+    if (reg) reg.showNotification(title, opts)
+    else new Notification(title, opts)
+  }
+  navigator.serviceWorker?.addEventListener('message', (e) => { const d = e.data?.open; if (d?.chat) openChat(d.chat); else if (d?.tab) go(d.tab) })
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {})
+  sb.auth.onAuthStateChange((e) => { if (e === 'SIGNED_OUT') location.reload() })
+  start()
+</script>
+</body>
+</html>
