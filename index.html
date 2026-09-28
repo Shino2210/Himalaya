@@ -216,6 +216,12 @@
       <a class="btn btn-main" href="app/">Ouvrir l'app mobile</a>
     </div>
 
+    <div class="keybox reveal" style="margin:-40px 0 70px;border-color:rgba(255,61,90,.4);background:radial-gradient(ellipse at top left, rgba(255,61,90,.16), transparent 60%), var(--panel)">
+      <div style="font-size:54px;line-height:1">🎥</div>
+      <div class="t"><h3>Himalaya Studio</h3><p>Enregistre et <b>streame tes parties en direct</b> sur Twitch, YouTube, TikTok ou Kick, comme avec OBS. Scènes, webcam, micro et son du PC, plus des widgets Himalaya : ta carte joueur, ton jeu en cours et tes alertes. Ta carte graphique encode la vidéo, donc tes jeux ne ralentissent pas.</p></div>
+      <a class="btn btn-main" id="studioDl" href="https://github.com/Shino2210/Himalaya/releases/tag/studio-latest">Télécharger Studio</a>
+    </div>
+
     <h2 class="h2 center reveal">Et encore plein d'autres choses</h2>
     <p class="sub center reveal">Himalaya, c'est bien plus qu'un simple launcher.</p>
     <div class="grid">
@@ -409,6 +415,15 @@
       document.querySelectorAll('.dl-link').forEach((a) => (a.href = exe.browser_download_url))
       const mb = (exe.size / 1048576).toFixed(0)
       document.getElementById('dlinfo').textContent = `Version ${rel.tag_name.replace(/^v/, '')} · ${mb} Mo · Windows 10 et 11 (64 bits)`
+    })
+    .catch(() => {})
+
+  // Himalaya Studio: latest installer of the "studio-latest" release
+  fetch('https://api.github.com/repos/Shino2210/Himalaya/releases/tags/studio-latest')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((rel) => {
+      const exe = rel?.assets?.find((a) => /^Himalaya-Studio-Setup-.*\.exe$/.test(a.name))
+      if (exe) document.getElementById('studioDl').href = exe.browser_download_url
     })
     .catch(() => {})
 
