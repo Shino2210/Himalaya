@@ -245,6 +245,7 @@
         <div class="tabs"><button type="button" class="on" data-mode="signup">Créer un compte</button><button type="button" data-mode="signin">J'ai déjà un compte</button></div>
         <form id="accForm" autocomplete="on">
           <label id="fUser"><span>Pseudo</span><input name="username" maxlength="20" placeholder="ex. Shino" autocomplete="nickname" /></label>
+          <label id="fBirth"><span>Date de naissance <small style="font-weight:500;color:var(--muted)">(privée)</small></span><input name="birthdate" type="date" min="1900-01-01" autocomplete="bday" style="color-scheme:dark" /></label>
           <label><span>Adresse e-mail</span><input name="email" type="email" required placeholder="toi@exemple.com" autocomplete="email" /></label>
           <label><span>Mot de passe</span><input name="password" type="password" required minlength="6" placeholder="6 caractères minimum" autocomplete="new-password" /></label>
           <button class="btn btn-main" style="width:100%" id="accSubmit">Créer mon compte</button>
@@ -343,6 +344,7 @@
     mode = b.dataset.mode
     document.querySelectorAll('.tabs button').forEach((x) => x.classList.toggle('on', x === b))
     $('fUser').hidden = mode !== 'signup'
+    $('fBirth').hidden = mode !== 'signup'
     $('accSubmit').textContent = mode === 'signup' ? 'Créer mon compte' : 'Se connecter'
     document.querySelector('#accForm [name=password]').autocomplete = mode === 'signup' ? 'new-password' : 'current-password'
     msg('')
@@ -354,9 +356,11 @@
     try {
       if (mode === 'signup') {
         if (!/^[A-Za-z0-9_.-]{3,20}$/.test(username)) return msg('Pseudo : 3 à 20 caractères (lettres, chiffres, _ . -).')
+        const birthdate = String(f.get('birthdate') || '')
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate) || new Date(birthdate) > new Date() || birthdate < '1900-01-01') return msg('Indique ta date de naissance.')
         const { data: free } = await sb.rpc('username_available', { p_username: username })
         if (free === false) return msg('Ce pseudo est déjà pris, choisis-en un autre.')
-        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username }, emailRedirectTo: location.origin + location.pathname + '#compte' } })
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username, birthdate }, emailRedirectTo: location.origin + location.pathname + '#compte' } })
         if (error) return msg(fr(error.message))
         // E-mail confirmation: the player confirms with the link, then signs in here.
         if (!data.session) return msg('Compte créé ! Clique sur le lien reçu par e-mail pour le confirmer, puis connecte-toi ici (pense aux spams).', true)
